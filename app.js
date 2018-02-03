@@ -46,31 +46,35 @@ BasicGame.Boot.prototype =
             game.debug.text(game.time.fps || '--', 2, 14, "#a7aebe");
         },
         spawnTiles: function () {
-            var tile;
-            var map = [
-                [1, 1, 0, 1, 0],
-                [1, 1, 0, 1, 0],
-                [1, 1, 0, 1, 0],
-                [1, 0, 0, 1, 1],
-                [0, 0, 0, 1, 1],
-            ];
-            var terrain = [
-                0x55ff55,
-                0xffff55
-            ];
-            var tiles_x = 5;
-            var tiles_y = 5;
-            var tiles_w = 36.57;
-            for (var xx = 0; xx < tiles_x; xx++) {
-                for (var yy = 0; yy < tiles_y; yy++) {
-                    // Create a tile using the new game.add.isoSprite factory method at the specified position.
-                    // The last parameter is the group you want to add it to (just like game.add.sprite)
-                    tile = game.add.isoSprite(xx * 38, yy * 38, 0, 'tile', 0, isoGroup);
-                    tile.tint = terrain[map[xx][yy]];
-                    console.log(terrain[map[xx][yy]]);
-                    tile.anchor.set(0.5, 0);
+            $.ajax({
+                dataType: "json",
+                url: 'http://localhost:8000/tiles/all',
+                success: function (data) {
+                    var map = [[], [], [], [], [], []];
+                    $.each(data, function (i, element) {
+                        map[element.y][element.x] = element.terrain;
+                    });
+                    var terrain = [
+                        0x55ff55,
+                        0xffff55,
+                        0x555555,
+                        0x5555ff //water
+                    ];
+                    var tiles_x = 5;
+                    var tiles_y = 5;
+                    var tiles_w = 36.57;
+                    for (var xx = 1; xx <= tiles_x; xx++) {
+                        for (var yy = 1; yy <= tiles_y; yy++) {
+                            // Create a tile using the new game.add.isoSprite factory method at the specified position.
+                            // The last parameter is the group you want to add it to (just like game.add.sprite)
+                            tile = game.add.isoSprite(xx * 38, yy * 38, 0, 'tile', 0, isoGroup);
+                            tile.tint = terrain[map[xx][yy]];
+                            console.log(terrain[map[xx][yy]]);
+                            tile.anchor.set(0.5, 0);
+                        }
+                    }
                 }
-            }
+            });
         }
     };
 game.state.add('Boot', BasicGame.Boot);
